@@ -1,0 +1,103 @@
+-- 1. Criar o Banco de Dados
+DROP DATABASE IF EXISTS Gestaofuncionarios;
+CREATE DATABASE Gestaofuncionarios;
+
+-- Usar o banco de dados criado
+USE Gestaofuncionarios;
+
+-- 2. Criar as Tabelas
+
+-- Tabela Departamentos
+CREATE TABLE Departamentos (
+    id_departamento INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL
+);
+
+-- Tabela Funcionários
+CREATE TABLE Funcionarios (
+    id_funcionario INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    cargo VARCHAR(50) NOT NULL,
+    salario DECIMAL(10, 2) NOT NULL,
+    id_departamento INT,
+    FOREIGN KEY (id_departamento) REFERENCES Departamentos(id_departamento)
+);
+
+-- Tabela Salarios
+CREATE TABLE Salarios (
+    id_salario INT PRIMARY KEY AUTO_INCREMENT,
+    id_funcionario INT,
+    data DATE NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_funcionario) REFERENCES Funcionarios(id_funcionario)
+);
+
+-- 3. Inserir Dados
+
+-- Adicionar Departamentos
+INSERT INTO Departamentos (nome) VALUES
+('Recursos Humanos'),
+('Tecnologia'),
+('Marketing'),
+('Financeiro');
+
+-- Adicionar Funcionários
+INSERT INTO Funcionarios (nome, cargo, salario, id_departamento) VALUES
+('João Silva', 'Analista', 3500.00, 1),
+('Maria Oliveira', 'Desenvolvedora', 5000.00, 2),
+('Carlos Souza', 'Designer', 4000.00, 3),
+('Ana Lima', 'Gerente', 6000.00, 4),
+('Fernanda Costa', 'Assistente', 2800.00, 1);
+
+-- Adicionar Salários
+INSERT INTO Salarios (id_funcionario, data, valor) VALUES
+(1, '2024-01-15', 3500.00),
+(2, '2024-01-15', 5000.00),
+(3, '2024-01-15', 4000.00),
+(4, '2024-01-15', 6000.00),
+(5, '2024-01-15', 2800.00);
+
+-- 4. Consultar Dados
+
+-- Listar todos os funcionários e seus respectivos departamentos
+SELECT F.nome AS 'Nome do Funcionario', F.cargo, D.nome AS 'Departamento'
+FROM Funcionarios F
+JOIN Departamentos D ON F.id_departamento = D.id_departamento;
+
+-- Mostrar o salário total de cada departamento
+SELECT D.nome AS 'Departamento', SUM(F.salario) AS 'Salario Total'
+FROM Funcionarios F
+JOIN Departamentos D ON F.id_departamento = D.id_departamento
+GROUP BY D.nome;
+
+-- Verificar os históricos de um funcionário específico
+SELECT F.nome AS 'Nome do Funcionário', S.data, S.valor AS 'Salario'
+FROM Salarios S
+JOIN Funcionarios F ON S.id_funcionario = F.id_funcionario
+WHERE F.nome = 'João Silva';
+
+-- 5. Atualizar Dados
+
+-- Atualizar o salário de um funcionário específico
+UPDATE Funcionarios
+SET salario = 3600.00
+WHERE id_funcionario = 1;
+
+-- Modificar o nome de um departamento
+UPDATE Departamentos
+SET nome = 'Recursos Humanos e Desenvolvimento'
+WHERE id_departamento = 1;
+
+-- 6. Excluir Dados
+
+-- Excluir um salário específico
+DELETE FROM Salarios
+WHERE id_funcionario = 3;
+
+-- Excluir um funcionário e todos os registros relacionados a salários
+DELETE FROM Funcionarios
+WHERE id_funcionario = 3;
+
+-- Remover um departamento (certifique-se de que não existem funcionários associados antes de excluir o departamento)
+DELETE FROM Departamentos
+WHERE id_departamento = 3;
